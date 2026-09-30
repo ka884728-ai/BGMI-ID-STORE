@@ -1,0 +1,272 @@
+import os
+
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
+from telegram.ext import (
+    Application,
+    CommandHandler,
+    CallbackQueryHandler,
+    ContextTypes,
+)
+
+
+# ==============================
+# BOT TOKEN
+# ==============================
+
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+
+if not BOT_TOKEN:
+    raise RuntimeError("BOT_TOKEN is not set!")
+
+
+# ==============================
+# MAIN MENU
+# ==============================
+
+def main_menu():
+
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                "🛒 BUY BGMI ID",
+                callback_data="buy"
+            ),
+            InlineKeyboardButton(
+                "💰 PRICE",
+                callback_data="price"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "📦 SERVICES",
+                callback_data="services"
+            ),
+            InlineKeyboardButton(
+                "📞 SUPPORT",
+                url="https://t.me/PIKU_LITE"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "ℹ️ ABOUT",
+                callback_data="about"
+            )
+        ]
+    ]
+
+    return InlineKeyboardMarkup(keyboard)
+
+
+# ==============================
+# START COMMAND
+# ==============================
+
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    text = (
+        "👑 <b>WELCOME TO BGMI ID STORE!</b>\n\n"
+        "🔥 Premium BGMI IDs & Digital Services\n"
+        "⚡ Fast & Easy Service\n"
+        "🔐 Secure & Reliable\n"
+        "🛒 Simple Ordering System\n\n"
+        "👇 <b>SELECT AN OPTION:</b>"
+    )
+
+    await update.message.reply_text(
+        text,
+        parse_mode="HTML",
+        reply_markup=main_menu()
+    )
+
+
+# ==============================
+# BUTTON HANDLER
+# ==============================
+
+async def button_handler(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE
+):
+
+    query = update.callback_query
+
+    await query.answer()
+
+
+    # BUY
+    if query.data == "buy":
+
+        text = (
+            "🛒 <b>BUY BGMI ID</b>\n\n"
+            "Available IDs aur details ke liye "
+            "support se contact karein.\n\n"
+            "📩 Support: @PIKU_LITE"
+        )
+
+        keyboard = [
+            [
+                InlineKeyboardButton(
+                    "📞 CONTACT SUPPORT",
+                    url="https://t.me/PIKU_LITE"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "🔙 BACK",
+                    callback_data="home"
+                )
+            ]
+        ]
+
+
+    # PRICE
+    elif query.data == "price":
+
+        text = (
+            "💰 <b>PRICE LIST</b>\n\n"
+            "🎮 BGMI ID\n"
+            "💵 Price: Contact Support\n\n"
+            "📩 @PIKU_LITE"
+        )
+
+        keyboard = [
+            [
+                InlineKeyboardButton(
+                    "📞 CONTACT SUPPORT",
+                    url="https://t.me/PIKU_LITE"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "🔙 BACK",
+                    callback_data="home"
+                )
+            ]
+        ]
+
+
+    # SERVICES
+    elif query.data == "services":
+
+        text = (
+            "📦 <b>OUR SERVICES</b>\n\n"
+            "🎮 BGMI ID Services\n"
+            "🛒 Digital Services\n"
+            "⚡ Fast Service\n"
+            "📞 Customer Support\n\n"
+            "For details contact @PIKU_LITE"
+        )
+
+        keyboard = [
+            [
+                InlineKeyboardButton(
+                    "📞 SUPPORT",
+                    url="https://t.me/PIKU_LITE"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "🔙 BACK",
+                    callback_data="home"
+                )
+            ]
+        ]
+
+
+    # ABOUT
+    elif query.data == "about":
+
+        text = (
+            "ℹ️ <b>ABOUT BGMI ID STORE</b>\n\n"
+            "👑 Welcome to BGMI ID STORE!\n\n"
+            "🔥 Premium IDs & Digital Services\n"
+            "⚡ Fast & Easy Service\n"
+            "🔐 Secure & Reliable\n\n"
+            "❤️ Thank you for choosing PIKU OWNER!"
+        )
+
+        keyboard = [
+            [
+                InlineKeyboardButton(
+                    "🔙 BACK",
+                    callback_data="home"
+                )
+            ]
+        ]
+
+
+    # HOME
+    elif query.data == "home":
+
+        text = (
+            "👑 <b>WELCOME TO BGMI ID STORE!</b>\n\n"
+            "🔥 Premium BGMI IDs & Digital Services\n"
+            "⚡ Fast & Easy Service\n"
+            "🔐 Secure & Reliable\n"
+            "🛒 Simple Ordering System\n\n"
+            "👇 <b>SELECT AN OPTION:</b>"
+        )
+
+        keyboard = [
+            [
+                InlineKeyboardButton(
+                    "🛒 BUY BGMI ID",
+                    callback_data="buy"
+                ),
+                InlineKeyboardButton(
+                    "💰 PRICE",
+                    callback_data="price"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "📦 SERVICES",
+                    callback_data="services"
+                ),
+                InlineKeyboardButton(
+                    "📞 SUPPORT",
+                    url="https://t.me/PIKU_LITE"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "ℹ️ ABOUT",
+                    callback_data="about"
+                )
+            ]
+        ]
+
+    else:
+        return
+
+
+    await query.edit_message_text(
+        text=text,
+        parse_mode="HTML",
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
+
+
+# ==============================
+# RUN BOT
+# ==============================
+
+def main():
+
+    app = Application.builder().token(BOT_TOKEN).build()
+
+    app.add_handler(
+        CommandHandler("start", start)
+    )
+
+    app.add_handler(
+        CallbackQueryHandler(button_handler)
+    )
+
+    print("🤖 BGMI ID STORE BOT STARTED!")
+
+    app.run_polling()
+
+
+if __name__ == "__main__":
+    main()
